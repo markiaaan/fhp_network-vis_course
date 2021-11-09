@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Workshop</title>
+
+
+	<style>
+
+	</style>
+
+	<script src="http://d3js.org/d3.v6.min.js"></script>
+
+</head>
+
+<body>
+	<h1>Pokemon</h1>
+
+	<script type="text/javascript">
+		const width = 1400;
+		const height = 900;
+
+		const svg = d3.select("body").append("svg") //create an svg using const width, height for the size
+			.attr("width", width)
+			.attr("height", height);
+
+		const scale = d3.scaleOrdinal() //we define a scale to position things on the x axis. one number in the scale for one type. d3 orders it by itself
+			.range([0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850])
+
+
+		const simulation = d3.forceSimulation()
+			.force("forceX", d3.forceX().strength(0.2).x(function(d) {
+				return scale(d.Type1) // we want to position the Pokemon on the x axis based on our self-defined scale and use the 18 different types as an input
+			}))
+			.force("forceY", d3.forceY().strength(.05).y(height * 0.5)) // on the y axis we want elements to position around the middle
+			.force("charge", d3.forceManyBody().strength(-15)) //how much should elements attract or repell each other?
+			.force("center", d3.forceCenter(width / 2, height / 2))
+
+		Promise.all([
+				d3.csv("data/pokemon.csv"), //data
+			])
+			.then(([dataset]) => { //we call the data dataset
+
+
+				simulation
+					.nodes(dataset) //define what data will be used in the simulation for the nodes
+					.on("tick", ticked) //start the simulation. each iteration is one "tick" --> ticked function
+
+				console.log(dataset) ///note: after the simulation the data now contains values for x and y
+
+				//create our Pokemon images based on the data. we leave out x and y because we will get this from the simulation and assign it in the ticked function
+				svg.selectAll(".pokemon")
+					.data(dataset)
+					.join("image")
+					.classed("pokemon", true)
+					.attr("height", "50px")
+					.attr("width", "50px")
+					.attr("xlink:href", function(d, i) {
+						return "data/pokemon-img/" + d.Name + ".png"
+					})
+
+
+					function ticked(d) {
+						//reposition the images based on the new calculated x and y
+						d3.selectAll(".pokemon")
+							.attr("x", function(d) {
+								return d.x;
+							})
+							.attr("y", function(d) {
+								return d.y;
+							})
+					}
+
+			});
+	</script>
+
+
+</body>
+
+</html>

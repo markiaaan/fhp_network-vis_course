@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Workshop</title>
+
+
+	<style>
+
+	.yellow{
+	fill: yellow;
+	stroke: black;
+	stroke-width: 2px;
+	}
+
+ .eyeballs{
+ 	fill: white;
+	stroke: black;
+	stroke-width: 2px;
+ }
+
+ .pupille{
+	fill: black;
+
+ }
+
+ .mund{
+	fill: red;
+ }
+
+ .testtext{
+ 	font-size: 60px;
+ }
+
+	</style>
+</head>
+<body>
+
+	<svg width="900" height="600">
+
+		<circle cx="450" cy="300" r="150" class="yellow" />
+		<circle cx="380" cy="260" r="50" class="eyeballs" />
+		<circle cx="460" cy="260" r="60" class="eyeballs" />
+		<circle cx="380" cy="260" r="20" class="pupille" />
+		<circle cx="460" cy="260" r="30" class="pupille" />
+		<polygon points="330 360, 420 400, 520 360" class="mund"/>
+
+		<text x="150" y="150" width="100" height="50" class="testtext">Hallo!</text>
+
+	</svg>
+
+
+</body>
+</html>

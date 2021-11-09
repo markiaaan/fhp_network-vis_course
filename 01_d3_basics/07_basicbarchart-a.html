@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Workshop</title>
+
+
+	<style>
+
+	</style>
+	<script src="http://d3js.org/d3.v6.min.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+datensatz = [3, 6, 8, 9, 1, 8, 2]
+
+var width = 500;
+var bar = 20;
+var height = datensatz.length * bar;
+
+var svg = d3.select("body").append("svg")
+	.attr("width", width)
+	.attr("heigt", height);
+
+var balken = svg.selectAll("rect")
+	.data(datensatz)
+	.enter()
+	.append("rect")
+	.attr("x", 10)
+	.attr("y", function(d, i){return i*bar})
+	.attr("height", bar-1)
+	.attr("width", function(d){return d*50});
+
+
+var label = svg.selectAll("text")
+	.data(datensatz)
+	.enter()
+	.append("text")
+	.attr("x", function(d){return d*50})
+	.attr("y", function(d,i){return i*bar})
+	.attr("dy", 14)
+	.text(function(d){return d})
+	.attr("fill", "white");
+
+
+
+</script>
+
+
+</body>
+</html>

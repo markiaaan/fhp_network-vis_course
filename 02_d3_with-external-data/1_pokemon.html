@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Workshop</title>
+
+
+	<style>
+		#firefilter {
+			background-color: rgb(255, 129, 68);
+		}
+
+		#waterfilter {
+			background-color: rgb(68, 176, 255);
+		}
+
+		#grassfilter {
+			background-color: rgb(68, 255, 165);
+		}
+	</style>
+
+	<script src="http://d3js.org/d3.v6.min.js"></script>
+
+</head>
+
+<body>
+
+	<h1>Pokemon</h1>
+	<!-- buttons for our filters -->
+	<button id="firefilter">Fire</button>
+	<button id="waterfilter">Water</button>
+	<button id="grassfilter">Grass</button>
+	<button id="reset">Reset</button>
+
+	<script type="text/javascript">
+		const width = 1400;
+		const height = 900;
+
+//create a new svg
+		const svg = d3.select("body").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+		//loading data
+		Promise.all([
+				d3.csv("data/pokemon.csv"), //data
+			])
+			.then(([dataset]) => { //we want to call the data "dataset"
+
+
+				svg.selectAll(".pokemon") //select All Pokemon (the objects we are going to create)
+					.data(dataset) //use our data called "dataset"
+					.join("image") //and create "images". note: svg images is different from html img tag
+					.classed("pokemon", true) //
+					.attr("height", "50px")
+					.attr("width", "50px")
+					.attr("x", function(d, i) { // d = data, i = iteration
+						return (i % 50) * 25 // % = modulo operator (The remainder operator (%) returns the remainder left over when one operand is divided by a second operand.) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder
+					})
+					.attr("y", function(d, i) {
+						return Math.floor(i / 50) * 25
+					})
+					.attr("xlink:href", function(d, i) {
+						return "data/pokemon-img/" + d.Name + ".png" // we now that d.Name is the same as the name of the images and need to add the path and file-ending
+					})
+
+
+				////filter
+				//fire
+				d3.select("#firefilter")
+					.on("click", function() {
+						d3.selectAll(".pokemon")
+							.transition()
+							.duration(600)
+							.style("opacity", function(d) {
+								if (d.Type1 == "Fire" || d.Type2 == "Fire") {
+									return 1
+								} else {
+									return 0.3
+								}
+							})
+					})
+
+					//water
+					d3.select("#waterfilter")
+						.on("click", function() {
+							d3.selectAll(".pokemon")
+								.transition()
+								.duration(600)
+								.style("opacity", function(d) {
+									if (d.Type1 == "Water" || d.Type2 == "Water") {
+										return 1
+									} else {
+										return 0.3
+									}
+								})
+						})
+
+						//grass
+						d3.select("#grassfilter")
+							.on("click", function() {
+								d3.selectAll(".pokemon")
+									.transition()
+									.duration(600)
+									.style("opacity", function(d) {
+										if (d.Type1 == "Grass" || d.Type2 == "Grass") {
+											return 1
+										} else {
+											return 0.3
+										}
+									})
+							})
+
+
+							//Reset
+							d3.select("#reset")
+								.on("click", function() {
+									d3.selectAll(".pokemon")
+										.transition()
+										.duration(600)
+										.style("opacity", function(d) {
+												return 1
+										})
+								})
+
+
+			});
+	</script>
+
+
+</body>
+
+</html>
