@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Workshop</title>
+
+
+	<style>
+
+	</style>
+
+	<script src="http://d3js.org/d3.v6.min.js"></script>
+
+</head>
+
+<body>
+
+	<script type="text/javascript">
+		const width = window.innerWidth
+		const height = window.innerHeight
+
+//create an svg
+		const svg = d3.select("body").append("svg")
+			.attr("width", "100%")
+			.attr("height", "100%")
+			.attr("preserveAspectRatio", "xMidYMid")
+			.attr("viewBox", "0 0 " + (width) + " " + (height));
+
+//scale for the edge colors based on the values of the relations
+		const edgeColors = d3.scaleOrdinal()
+			.domain(["knows", "likes", "dislikes", "loves"])
+			.range(["grey", "cyan", "red", "pink"])
+
+//simulation
+		const simulation = d3.forceSimulation()
+			.force("link", d3.forceLink().id(function(d, i) {
+				return d.name;
+			}).distance(200)) //link force: use the name attribute of the nodes as the connecting id between nodes edges. distance= make edges 200px long
+			.force("charge", d3.forceManyBody().strength(-10))
+			.force("collide", d3.forceCollide().radius(9))
+			.force("center", d3.forceCenter(width / 2, height / 2));
+
+//load our data, one link for the nodes, one link for the relations
+		Promise.all([
+				d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRw31-rLHyNT5IFZ9SpvMgKLn_k7i6XP2GNBXuuqml4nnvLTNC5q_ujUmGEd1UHF8WqTBXKEvelFKQJ/pub?gid=1887523173&single=true&output=csv"), //nodes
+				d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRw31-rLHyNT5IFZ9SpvMgKLn_k7i6XP2GNBXuuqml4nnvLTNC5q_ujUmGEd1UHF8WqTBXKEvelFKQJ/pub?gid=0&single=true&output=csv"), //edges
+			])
+			.then(([nodes, edges]) => {
+
+				console.log(nodes)
+				console.log(edges)
+
+//start simulation
+				simulation
+					.nodes(nodes)
+					.on("tick", ticked)
+
+				simulation
+					.force("link")
+					.links(edges)
+
+//create edges. this time we use curved paths
+				svg.selectAll(".link")
+					.data(edges)
+					.join("path")
+					.style("fill", "none")
+					.attr("stroke-width", 2)
+					.attr("class", "link")
+					.style("stroke", function(d, i) {
+						return edgeColors(d.type)
+					})
+					.style("opacity", 0.5)
+
+//create nodes
+				svg.selectAll(".node")
+					.data(nodes)
+					.join("circle")
+					.classed("node", true)
+					.attr("r", 8)
+					.style("stroke", "white")
+					.style("stroke-width", 2)
+					.style("fill", "black")
+
+//create labels for nodes
+					svg.selectAll(".nodelabel")
+						.data(nodes)
+						.join("text")
+						.classed("nodelabel", true)
+						.text(function(d){return d.name})
+
+
+//ticked simulation function
+				function ticked(d) {
+//position the nodes
+					d3.selectAll(".node")
+						.attr("cx", function(d) {
+							return d.x;
+						})
+						.attr("cy", function(d) {
+							return d.y;
+						})
+
+//position labels the same way we position the nodes
+						d3.selectAll(".nodelabel")
+							.attr("x", function(d) {
+								return d.x+10;
+							})
+							.attr("y", function(d) {
+								return d.y+10;
+							})
+
+//position the edges
+					d3.selectAll(".link")
+					.attr("d", function(d) {
+
+					let	dr = 2000; //radius of the curve
+					 return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+					});
+
+				}
+
+			});
+	</script>
+
+
+</body>
+
+</html>
